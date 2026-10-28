@@ -1,0 +1,77 @@
+Guía Paso a Paso para el Usuario Final
+Estimado cliente, esta guía le enseñará a operar de forma sencilla y segura nuestro sistema de control logístico para optimizar el almacenamiento y despacho de su empresa.
+
+¿Cómo iniciar el programa?
+Asegúrese de tener Python instalado en su computadora.
+
+Abra su terminal o consola de comandos.
+
+Ejecute el archivo del programa escribiendo:
+
+Bash
+python sistema_logistico.py
+Al iniciar, verá aparecer en su pantalla el menú principal con las opciones disponibles.
+
+Descripción de las Opciones del Menú
+1. Apilar caja
+Para qué sirve: Permite registrar el ingreso de una nueva caja al almacén estructurado bajo el método LIFO (el último en entrar es el primero en salir).
+
+Cómo usarlo:
+
+Digite la opción 1 y presione Enter.
+
+Escriba el nombre o código de la caja (por ejemplo: CAJA-101) y presione Enter.
+
+El sistema le confirmará que la caja ha sido colocada exitosamente en la cima de la pila.
+
+2. Retirar caja de la cima
+Para qué sirve: Saca del sistema la última caja que fue colocada en el almacén.
+
+Cómo usarlo:
+
+Digite la opción 2 y presione Enter.
+
+El sistema le mostrará el nombre de la caja extraída.
+
+Nota de seguridad: Si el almacén está vacío, el sistema no se cerrará; en su lugar, le mostrará un aviso claro indicando que no hay elementos para retirar.
+
+3. Llegada de camión
+Para qué sirve: Registra la llegada de un vehículo a la bahía de carga bajo el método FIFO (el primero en llegar es el primero en ser atendido).
+
+Cómo usarlo:
+
+Digite la opción 3 y presione Enter.
+
+Ingrese la placa o identificador del camión (por ejemplo: CAMION-A) y presione Enter.
+
+El sistema le confirmará que el vehículo se encuentra debidamente formado en la fila de espera.
+
+4. Despachar primer camión
+Para qué sirve: Atiende y despacha al camión que lleva más tiempo esperando en la cola.
+
+Cómo usarlo:
+
+Digite la opción 4 y presione Enter.
+
+El sistema le indicará cuál camión ha sido despachado.
+
+Nota de seguridad: Si la fila está vacía, el programa le notificará amablemente que no hay camiones en espera sin generar errores de sistema.
+
+5. Ver estado almacén y camiones
+Para qué sirve: Muestra una radiografía en tiempo real de cuántas cajas hay apiladas y qué camiones están formados. Ideal para labores de supervisión rápida.
+
+Cómo usarlo:
+
+Digite la opción 5 y presione Enter.
+
+Visualice en pantalla el listado actual de inventario y transporte.
+
+6. Salir
+Para qué sirve: Cierra de manera segura la aplicación.
+
+Cómo usarlo: Digite la opción 6 y presione Enter.
+
+Recomendaciones de Uso y Manejo de Errores
+Protección contra errores: El programa ha sido configurado para no cerrarse por error. Si por equivocación ingresa una letra en lugar de un número o una opción fuera del rango (por ejemplo, el número 9), el sistema le mostrará un mensaje de error descriptivo y volverá a mostrarle el menú principal de manera automática.
+
+Integridad de los datos: Recuerde que las cajas siguen estrictamente el orden LIFO (no es posible retirar elementos intermedios sin sacar primero los que están encima).
