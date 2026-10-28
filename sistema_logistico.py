@@ -18,7 +18,7 @@ class Stack:
             return None
         return self.datos[-1]
 
-    def __is_empty(self) ->bool:
+    def __is_empty(self) -> bool:
         return len(self.datos) == 0
 
 # Clase Cola
@@ -39,17 +39,17 @@ class Queue:
             return None
         return self.datos[0]
 
-    def __is_empty(self) ->bool:
+    def __is_empty(self) -> bool:
         return len(self.datos) == 0
 
 
 def mostrar_menu():
     print("\n========================================")
-    print("   SISTEMA DE GESTIÓN LOGÍSTICA - CONSOLA")
+    print("  SISTEMA DE GESTIÓN LOGÍSTICA - CONSOLA")
     print("========================================")
     print("1. Apilar caja (Agregar a la cima del almacén)")
     print("2. Retirar caja de la cima")
-    print("3. LLegada de camión (Añadir a la fila)")
+    print("3. Llegada de camión (Añadir a la fila)")
     print("4. Despachar primer camión")
     print("5. Ver estado actual (Almacén y Camiones)")
     print("6. Salir del programa")
@@ -57,11 +57,9 @@ def mostrar_menu():
 
 def ejecutar_sistema():
     # Estructuras de datos principales
-    # Almacén: LIFO (último en entrar, primero en salir) -> Usamos una lista de Python
     almacen_cajas = []
-    
-    # Cola de camiones: FIFO (primero en llegar, primero en ser atendido) -> Usamos una lista como cola
     fila_camiones = []
+    historial_movimientos = []
 
     while True:
         mostrar_menu()
@@ -81,6 +79,7 @@ def ejecutar_sistema():
                 print("\n[ERROR] El nombre de la caja no puede estar vacío.")
                 continue
             almacen_cajas.append(nombre_caja)
+            historial_movimientos.append(f"Caja APILADA: {nombre_caja}")
             print(f"\n[ÉXITO] La caja '{nombre_caja}' fue apilada con éxito en la cima.")
 
         elif opcion == 2:
@@ -89,6 +88,7 @@ def ejecutar_sistema():
                 print("\n[AVISO] El almacén está vacío. No hay cajas para retirar.")
             else:
                 caja_retirada = almacen_cajas.pop()
+                historial_movimientos.append(f"Caja RETIRADA: {caja_retirada}")
                 print(f"\n[ÉXITO] Caja retirada de la cima: '{caja_retirada}'.")
 
         elif opcion == 3:
@@ -98,6 +98,7 @@ def ejecutar_sistema():
                 print("\n[ERROR] La placa del camión no puede estar vacía.")
                 continue
             fila_camiones.append(placa_camion)
+            historial_movimientos.append(f"Camión LLEGADA: {placa_camion}")
             print(f"\n[ÉXITO] Camión '{placa_camion}' formado en la fila de espera.")
 
         elif opcion == 4:
@@ -106,13 +107,47 @@ def ejecutar_sistema():
                 print("\n[AVISO] No hay camiones esperando en la fila.")
             else:
                 camion_despachado = fila_camiones.pop(0)
+                historial_movimientos.append(f"Camión DESPACHADO: {camion_despachado}")
                 print(f"\n[ÉXITO] Camión despachado: '{camion_despachado}'.")
 
         elif opcion == 5:
-            # Ver estado actual
+            # Ver estado actual del centro de distribución
             print("\n--- ESTADO ACTUAL DEL CENTRO DE DISTRIBUCIÓN ---")
             print(f"Cajas apiladas (Cima al final): {almacen_cajas}")
             print(f"Camiones en fila (Frente al inicio): {fila_camiones}")
+            print("-------------------------------------------------")
+
+            # Opciones interactivas integradas para ver el historial
+            print("\n--- HISTORIAL DE MOVIMIENTOS ---")
+            if len(historial_movimientos) == 0:
+                print("Aún no se han registrado movimientos en el sistema.")
+            else:
+                print("1. Ver orden cronológico (Antiguos primero)")
+                print("2. Ver orden inverso (Más recientes primero)")
+                print("3. Filtrar solo movimientos de Cajas")
+                print("4. Filtrar solo movimientos de Camiones")
+                sub_opcion = input("Elija una forma de visualización (1-4) o presione Enter para ver todo: ").strip()
+
+                print("\n--- REGISTRO DE EVENTOS ---")
+                
+                # Lógica de filtrado y ordenamiento
+                if sub_opcion == "2":
+                    movimientos_a_mostrar = reversed(historial_movimientos)
+                elif sub_opcion == "3":
+                    movimientos_a_mostrar = [m for m in historial_movimientos if "Caja" in m or "APILADA" in m or "RETIRADA" in m]
+                elif sub_opcion == "4":
+                    movimientos_a_mostrar = [m for m in historial_movimientos if "Camión" in m or "LLEGADA" in m or "DESPACHO" in m]
+                else:
+                    movimientos_a_mostrar = historial_movimientos
+
+                # Impresión de los movimientos
+                encontrados = False
+                for idx, movimiento in enumerate(movimientos_a_mostrar, 1):
+                    print(f"[{idx}] {movimiento}")
+                    encontrados = True
+                
+                if not encontrados:
+                    print("No hay registros que coincidan con el filtro seleccionado.")
             print("-------------------------------------------------")
 
         elif opcion == 6:
