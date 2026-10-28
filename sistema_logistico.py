@@ -1,7 +1,7 @@
 import sys
 
 # Clase Pila
-class Pila:
+class Stack:
     def __init__(self):
         self.datos = []
 
@@ -13,13 +13,34 @@ class Pila:
             return None
         return self.datos.pop(-1)
 
+    def top(self):
+        if self.__is_empty():
+            return None
+        return self.datos[-1]
+
     def __is_empty(self) ->bool:
         return len(self.datos) == 0
 
 # Clase Cola
-class Cola:
+class Queue:
     def __init__(self):
         self.datos = []
+
+    def enqueue(self, dato):
+        self.datos.append(dato)
+
+    def dequeue(self):
+        if self.__is_empty():
+            return None
+        return self.datos.pop(0)
+
+    def first(self):
+        if self.__is_empty():
+            return None
+        return self.datos[0]
+
+    def __is_empty(self) ->bool:
+        return len(self.datos) == 0
 
 
 def mostrar_menu():
