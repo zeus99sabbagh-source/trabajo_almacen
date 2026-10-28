@@ -51,7 +51,7 @@ def mostrar_menu():
     print("2. Retirar caja de la cima")
     print("3. Llegada de camión (Añadir a la fila)")
     print("4. Despachar primer camión")
-    print("5. Ver estado actual (Almacén y Camiones)")
+    print("5. Consultas, Estadísticas e Historial")
     print("6. Salir del programa")
     print("========================================")
 
@@ -60,6 +60,9 @@ def ejecutar_sistema():
     almacen_cajas = []
     fila_camiones = []
     historial_movimientos = []
+    
+    # Diccionario para llevar el conteo de cada opción seleccionada
+    contador_opciones = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
 
     while True:
         mostrar_menu()
@@ -72,11 +75,20 @@ def ejecutar_sistema():
 
         opcion = int(opcion)
 
+        # Validar que esté en el rango correcto antes de contar
+        if opcion < 1 or opcion > 6:
+            print("\n[ERROR] Opción fuera de rango. Seleccione un número entre 1 y 6.")
+            continue
+
+        # Incrementamos el contador de la opción seleccionada
+        contador_opciones[opcion] += 1
+
         if opcion == 1:
             # Apilar caja (LIFO)
             nombre_caja = input("Ingrese el nombre/identificador de la caja (ej. CAJA-101): ").strip()
             if not nombre_caja:
                 print("\n[ERROR] El nombre de la caja no puede estar vacío.")
+                contador_opciones[1] -= 1
                 continue
             almacen_cajas.append(nombre_caja)
             historial_movimientos.append(f"Caja APILADA: {nombre_caja}")
@@ -96,6 +108,7 @@ def ejecutar_sistema():
             placa_camion = input("Ingrese la placa o identificador del camión (ej. CAMION-ALPHA): ").strip()
             if not placa_camion:
                 print("\n[ERROR] La placa del camión no puede estar vacía.")
+                contador_opciones[3] -= 1
                 continue
             fila_camiones.append(placa_camion)
             historial_movimientos.append(f"Camión LLEGADA: {placa_camion}")
@@ -111,52 +124,75 @@ def ejecutar_sistema():
                 print(f"\n[ÉXITO] Camión despachado: '{camion_despachado}'.")
 
         elif opcion == 5:
-            # Ver estado actual del centro de distribución
-            print("\n--- ESTADO ACTUAL DEL CENTRO DE DISTRIBUCIÓN ---")
-            print(f"Cajas apiladas (Cima al final): {almacen_cajas}")
-            print(f"Camiones en fila (Frente al inicio): {fila_camiones}")
-            print("-------------------------------------------------")
-
-            # Opciones interactivas integradas para ver el historial
-            print("\n--- HISTORIAL DE MOVIMIENTOS ---")
-            if len(historial_movimientos) == 0:
-                print("Aún no se han registrado movimientos en el sistema.")
-            else:
-                print("1. Ver orden cronológico (Antiguos primero)")
-                print("2. Ver orden inverso (Más recientes primero)")
-                print("3. Filtrar solo movimientos de Cajas")
-                print("4. Filtrar solo movimientos de Camiones")
-                sub_opcion = input("Elija una forma de visualización (1-4) o presione Enter para ver todo: ").strip()
-
-                print("\n--- REGISTRO DE EVENTOS ---")
+            # Submenú para Estado, Estadísticas e Historial
+            while True:
+                print("\n========================================")
+                print("     SUBMENÚ: REPORTES Y CONSULTAS")
+                print("========================================")
+                print("1. Ver estado actual (Almacén y Camiones)")
+                print("2. Ver estadísticas de uso (Contadores)")
+                print("3. Ver historial de movimientos")
+                print("4. Volver al menú principal")
+                print("========================================")
                 
-                # Lógica de filtrado y ordenamiento
-                if sub_opcion == "2":
-                    movimientos_a_mostrar = reversed(historial_movimientos)
+                sub_opcion = input("Elija una opción del submenú (1-4): ").strip()
+
+                if sub_opcion == "1":
+                    print("\n--- ESTADO ACTUAL DEL CENTRO DE DISTRIBUCIÓN ---")
+                    print(f"Cajas apiladas (Cima al final): {almacen_cajas}")
+                    print(f"Camiones en fila (Frente al inicio): {fila_camiones}")
+                    print("-------------------------------------------------")
+
+                elif sub_opcion == "2":
+                    print("\n--- ESTADÍSTICAS DE USO (VECES SELECCIONADAS) ---")
+                    print(f"• Apilar cajas (Opción 1): {contador_opciones[1]} veces")
+                    print(f"• Retirar cajas (Opción 2): {contador_opciones[2]} veces")
+                    print(f"• Llegadas de camión (Opción 3): {contador_opciones[3]} veces")
+                    print(f"• Despachos de camión (Opción 4): {contador_opciones[4]} veces")
+                    print(f"• Consultar reportes (Opción 5): {contador_opciones[5]} veces")
+                    print("-------------------------------------------------")
+
                 elif sub_opcion == "3":
-                    movimientos_a_mostrar = [m for m in historial_movimientos if "Caja" in m or "APILADA" in m or "RETIRADA" in m]
-                elif sub_opcion == "4":
-                    movimientos_a_mostrar = [m for m in historial_movimientos if "Camión" in m or "LLEGADA" in m or "DESPACHO" in m]
-                else:
-                    movimientos_a_mostrar = historial_movimientos
+                    print("\n--- HISTORIAL DE MOVIMIENTOS ---")
+                    if len(historial_movimientos) == 0:
+                        print("Aún no se han registrado movimientos en el sistema.")
+                    else:
+                        print("1. Ver orden cronológico (Antiguos primero)")
+                        print("2. Ver orden inverso (Más recientes primero)")
+                        print("3. Filtrar solo movimientos de Cajas")
+                        print("4. Filtrar solo movimientos de Camiones")
+                        filtro_historial = input("Elija una forma de visualización (1-4) o presione Enter para ver todo: ").strip()
 
-                # Impresión de los movimientos
-                encontrados = False
-                for idx, movimiento in enumerate(movimientos_a_mostrar, 1):
-                    print(f"[{idx}] {movimiento}")
-                    encontrados = True
-                
-                if not encontrados:
-                    print("No hay registros que coincidan con el filtro seleccionado.")
-            print("-------------------------------------------------")
+                        print("\n--- REGISTRO DE EVENTOS ---")
+                        if filtro_historial == "2":
+                            movimientos_a_mostrar = reversed(historial_movimientos)
+                        elif filtro_historial == "3":
+                            movimientos_a_mostrar = [m for m in historial_movimientos if "Caja" in m]
+                        elif filtro_historial == "4":
+                            movimientos_a_mostrar = [m for m in historial_movimientos if "Camión" in m]
+                        else:
+                            movimientos_a_mostrar = historial_movimientos
+
+                        encontrados = False
+                        for idx, movimiento in enumerate(movimientos_a_mostrar, 1):
+                            print(f"[{idx}] {movimiento}")
+                            encontrados = True
+                        
+                        if not encontrados:
+                            print("No hay registros que coincidan con el filtro seleccionado.")
+                    print("-------------------------------------------------")
+
+                elif sub_opcion == "4":
+                    print("\nRegresando al menú principal...")
+                    break
+                else:
+                    print("\n[ERROR] Opción inválida en el submenú. Ingrese un número entre 1 y 4.")
 
         elif opcion == 6:
             # Salir
             print("\nGracias por utilizar el Sistema de Gestión Logística. ¡Hasta luego!")
+            print(f"(Estadísticas finales de uso: {contador_opciones})")
             sys.exit()
-
-        else:
-            print("\n[ERROR] Opción fuera de rango. Seleccione un número entre 1 y 6.")
 
 if __name__ == "__main__":
     ejecutar_sistema()
