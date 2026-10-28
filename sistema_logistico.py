@@ -1,5 +1,27 @@
 import sys
 
+# Clase Pila
+class Pila:
+    def __init__(self):
+        self.datos = []
+
+    def push(self, dato):
+        self.datos.append(dato)
+
+    def pop(self):
+        if self.__is_empty():
+            return None
+        return self.datos.pop(-1)
+
+    def __is_empty(self) ->bool:
+        return len(self.datos) == 0
+
+# Clase Cola
+class Cola:
+    def __init__(self):
+        self.datos = []
+
+
 def mostrar_menu():
     print("\n========================================")
     print("   SISTEMA DE GESTIÓN LOGÍSTICA - CONSOLA")
