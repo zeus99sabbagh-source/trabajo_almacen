@@ -3,116 +3,154 @@ import sys
 from collections import deque
 from typing import Any, Optional
 
-#Limpia Terminal
+#Limpieza de terminal
 def limpiar_pantalla() -> None:
+    """Limpia la consola en Windows o Linux/macOS."""
     os.system("cls" if os.name == "nt" else "clear")
 
-#Clase Pila
+#Clase pila
 class Stack:
-    def __init__(self) -> None:
-        self.datos = []
+    """Implementación de Pila (LIFO) para el Almacén de Cajas."""
 
-    def push(self, dato: Any) -> None:
+    def __init__(self, capacidad_maxima: Optional[int] = None) -> None:
+        self.datos = []
+        self.capacidad_maxima = capacidad_maxima
+
+    def esta_vacia(self) -> bool:
+        return len(self.datos) == 0
+
+    def esta_llena(self) -> bool:
+        if self.capacidad_maxima is None:
+            return False
+        return len(self.datos) >= self.capacidad_maxima
+
+    def push(self, dato: Any) -> bool:
+        if self.esta_llena():
+            return False
         self.datos.append(dato)
+        return True
 
     def pop(self) -> Optional[Any]:
-        if self.is_empty():
+        if self.esta_vacia():
             return None
         return self.datos.pop()
 
-    def peek(self) -> Optional[Any]:
-        if self.is_empty():
+    def top(self) -> Optional[Any]:
+        if self.esta_vacia():
             return None
         return self.datos[-1]
 
-    def is_empty(self) -> bool:
-        return len(self.datos) == 0
+    # Alias para compatibilidad con la especificación
+    peek = top
+    is_empty = esta_vacia
 
     def __len__(self) -> int:
         return len(self.datos)
 
     def __str__(self) -> str:
+        # Representación de Cima a Base
         return str(self.datos[::-1])
 
 #Clase Cola
 class Queue:
-    def __init__(self) -> None:
-        self.datos = deque()
+    """Implementación de Cola (FIFO) con deque para la Bahía de Camiones."""
 
-    def enqueue(self, dato: Any) -> None:
+    def __init__(self, capacidad_maxima: Optional[int] = None) -> None:
+        self.datos = deque()
+        self.capacidad_maxima = capacidad_maxima
+
+    def esta_vacia(self) -> bool:
+        return len(self.datos) == 0
+
+    def esta_llena(self) -> bool:
+        if self.capacidad_maxima is None:
+            return False
+        return len(self.datos) >= self.capacidad_maxima
+
+    def enqueue(self, dato: Any) -> bool:
+        if self.esta_llena():
+            return False
         self.datos.append(dato)
+        return True
 
     def dequeue(self) -> Optional[Any]:
-        if self.is_empty():
+        if self.esta_vacia():
             return None
         return self.datos.popleft()
 
     def ver_frente(self) -> Optional[Any]:
-        if self.is_empty():
+        if self.esta_vacia():
             return None
         return self.datos[0]
 
-    def is_empty(self) -> bool:
-        return len(self.datos) == 0
+    # Alias para compatibilidad con la especificación
+    first = ver_frente
+    is_empty = esta_vacia
 
     def __len__(self) -> int:
         return len(self.datos)
 
     def __str__(self) -> str:
+        # Representación de Frente a Fin
         return str(list(self.datos))
+
 
 #Validaciones
 def pedir_opcion(minimo: int, maximo: int, mensaje: str = "Seleccione una opción: ") -> int:
+    """Valida números enteros, rango y captura Ctrl+C sin colapsar."""
     while True:
         try:
             entrada = input(mensaje).strip()
             if not entrada:
-                print("[!] Error: No puede dejar la opción vacía.")
+                print("\n[ERROR] La opción no puede estar vacía.")
                 continue
 
             opcion = int(entrada)
             if minimo <= opcion <= maximo:
                 return opcion
-            print(f"[!] Error: Ingrese un número entre {minimo} y {maximo}.")
+            print(f"\n[ERROR] Opción fuera de rango. Seleccione un número entre {minimo} y {maximo}.")
         except ValueError:
-            print(f"[!] Error: Entrada inválida. Ingrese un valor numérico entre {minimo} y {maximo}.")
+            print(f"\n[ERROR] Opción inválida. Por favor, ingrese un número del {minimo} al {maximo}.")
         except (KeyboardInterrupt, EOFError):
-            print("\n\n[!] Interrupción detectada (Ctrl+C).")
+            print("\n\n[AVISO] Interrupción detectada (Ctrl+C). Regresando...")
             return maximo
 
 
 def pedir_identificador(
     tipo: str,
-    estructura_actual: Any,
+    estructura: Any,
     longitud_min: int = 2,
     longitud_max: int = 30,
 ) -> Optional[str]:
+    """Valida vacíos, longitud, duplicados y captura Ctrl+C."""
     while True:
         try:
-            ejemplo = "Caja-101" if "caja" in tipo.lower() else "Camión-Alfa"
-            valor = input(f"-> Ingrese identificador de {tipo} (ej. {ejemplo}): ").strip()
+            ejemplo = "ej. CAJA-101" if "caja" in tipo.lower() else "ej. CAMION-ALPHA"
+            valor = input(f"Ingrese el nombre/identificador de {tipo} ({ejemplo}): ").strip()
 
             if not valor:
-                print(f"[!] Error: El identificador de {tipo} no puede estar vacío.")
+                print(f"\n[ERROR] El identificador de {tipo} no puede estar vacío.")
                 continue
 
             if len(valor) < longitud_min or len(valor) > longitud_max:
-                print(f"[!] Error: La longitud debe tener entre {longitud_min} y {longitud_max} caracteres.")
+                print(f"\n[ERROR] La longitud debe tener entre {longitud_min} y {longitud_max} caracteres.")
                 continue
 
-            elementos = getattr(estructura_actual, "datos", estructura_actual)
+            # Revisión de duplicados
+            elementos = getattr(estructura, "datos", estructura)
             if valor in elementos:
-                print(f"[!] Error: El identificador '{valor}' ya existe en el sistema.")
+                print(f"\n[ERROR] El identificador '{valor}' ya existe en el sistema.")
                 continue
 
             return valor
 
         except (KeyboardInterrupt, EOFError):
-            print("\n[!] Operación cancelada por el usuario.")
+            print("\n[AVISO] Operación cancelada por el usuario.")
             return None
 
 
-def confirmar(pregunta: str = "¿Desea continuar?") -> bool:
+def confirmar(pregunta: str = "¿Está seguro de que desea salir?") -> bool:
+    """Pide confirmación simple por consola."""
     while True:
         try:
             respuesta = input(f"{pregunta} (s/n): ").strip().lower()
@@ -120,84 +158,156 @@ def confirmar(pregunta: str = "¿Desea continuar?") -> bool:
                 return True
             if respuesta in ("n", "no"):
                 return False
-            print("[!] Por favor responda 's' para sí o 'n' para no.")
+            print("[AVISO] Por favor responda 's' para sí o 'n' para no.")
         except (KeyboardInterrupt, EOFError):
-            print("\n[!] Operación cancelada.")
+            print("\n[AVISO] Operación cancelada.")
             return False
 
-#Interfaz
-def mostrar_menu() -> None:
-    print("\n==================================================")
-    print("        SISTEMA DE DESPACHO Y ALMACÉN")
-    print("==================================================")
-    print("1. [PILA] Apilar caja (push)")
-    print("2. [PILA] Retirar caja de la cima (pop)")
-    print("3. [COLA] Llega camión a la fila (enqueue)")
-    print("4. [COLA] Despachar primer camión (dequeue)")
-    print("5. Ver estado del almacén y camiones")
+
+#Menú
+def mostrar_menu():
+    print("\n========================================")
+    print("  SISTEMA DE GESTIÓN LOGÍSTICA - CONSOLA")
+    print("========================================")
+    print("1. Apilar caja (Agregar a la cima del almacén)")
+    print("2. Retirar caja de la cima")
+    print("3. Llegada de camión (Añadir a la fila)")
+    print("4. Despachar primer camión")
+    print("5. Consultas, Estadísticas e Historial")
     print("6. Salir del programa")
-    print("--------------------------------------------------")
+    print("========================================")
 
 
-def ejecutar_sistema() -> None:
+def ejecutar_sistema():
+    # Estructuras de datos instanciadas con las clases
     almacen_cajas = Stack()
     fila_camiones = Queue()
     historial_movimientos = []
+
+    # Diccionario para llevar el conteo de cada opción seleccionada
     contador_opciones = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
 
     while True:
         mostrar_menu()
         opcion = pedir_opcion(1, 6, "Seleccione una opción (1-6): ")
-        contador_opciones[opcion] += 1
 
-        # Limpia la pantalla inmediatamente al seleccionar la opción
+        # Limpia la pantalla al marcar la opción
         limpiar_pantalla()
 
+        # Incrementamos el contador de la opción seleccionada
+        contador_opciones[opcion] += 1
+
         if opcion == 1:
-            nombre_caja = pedir_identificador("caja", almacen_cajas)
-            if nombre_caja:
-                almacen_cajas.push(nombre_caja)
-                historial_movimientos.append(f"Caja APILADA: {nombre_caja}")
-                print(f"-> Caja [{nombre_caja}] apilada con éxito.")
-            else:
+            # Apilar caja (LIFO)
+            nombre_caja = pedir_identificador("la caja", almacen_cajas)
+            if not nombre_caja:
                 contador_opciones[1] -= 1
+                continue
+
+            almacen_cajas.push(nombre_caja)
+            historial_movimientos.append(f"Caja APILADA: {nombre_caja}")
+            print(f"\n[ÉXITO] La caja '{nombre_caja}' fue apilada con éxito en la cima.")
 
         elif opcion == 2:
+            # Retirar caja de la cima (LIFO)
             caja_retirada = almacen_cajas.pop()
             if caja_retirada is None:
-                print("[!] Error: El almacén está vacío (no hay cajas que retirar).")
+                print("\n[AVISO] El almacén está vacío. No hay cajas para retirar.")[cite: 1]
             else:
                 historial_movimientos.append(f"Caja RETIRADA: {caja_retirada}")
-                print(f"-> Caja [{caja_retirada}] retirada de la cima.")
+                print(f"\n[ÉXITO] Caja retirada de la cima: '{caja_retirada}'.")
 
         elif opcion == 3:
-            placa_camion = pedir_identificador("camión", fila_camiones)
-            if placa_camion:
-                fila_camiones.enqueue(placa_camion)
-                historial_movimientos.append(f"Camión LLEGADA: {placa_camion}")
-                print(f"-> Camión [{placa_camion}] formado en la fila.")
-            else:
+            # Llegada de camión (FIFO)
+            placa_camion = pedir_identificador("el camión", fila_camiones)
+            if not placa_camion:
                 contador_opciones[3] -= 1
+                continue
+
+            fila_camiones.enqueue(placa_camion)
+            historial_movimientos.append(f"Camión LLEGADA: {placa_camion}")
+            print(f"\n[ÉXITO] Camión '{placa_camion}' formado en la fila de espera.")
 
         elif opcion == 4:
+            # Despachar primer camión (FIFO)
             camion_despachado = fila_camiones.dequeue()
             if camion_despachado is None:
-                print("[!] Error: No hay camiones esperando turno.")
+                print("\n[AVISO] No hay camiones esperando en la fila.")[cite: 1]
             else:
                 historial_movimientos.append(f"Camión DESPACHADO: {camion_despachado}")
-                print(f"-> Camión [{camion_despachado}] despachado.")
+                print(f"\n[ÉXITO] Camión despachado: '{camion_despachado}'.")
 
         elif opcion == 5:
-            print("--------------------------------------------------")
-            print("ESTADO ACTUAL:")
-            print(f"- Cajas apiladas (Cima -> Base): {almacen_cajas}")
-            print(f"- Fila de camiones (Frente -> Fin): {fila_camiones}")
-            print("--------------------------------------------------")
+            # Submenú para Estado, Estadísticas e Historial
+            while True:
+                print("\n========================================")
+                print("      SUBMENÚ: REPORTES Y CONSULTAS")
+                print("========================================")
+                print("1. Ver estado actual (Almacén y Camiones)")
+                print("2. Ver estadísticas de uso (Contadores)")
+                print("3. Ver historial de movimientos")
+                print("4. Volver al menú principal")
+                print("========================================")
+
+                sub_opcion = pedir_opcion(1, 4, "Elija una opción del submenú (1-4): ")
+                limpiar_pantalla()
+
+                if sub_opcion == 1:
+                    print("\n--- ESTADO ACTUAL DEL CENTRO DE DISTRIBUCIÓN ---")
+                    print(f"Cajas apiladas (Cima -> Base): {almacen_cajas}")[cite: 1]
+                    print(f"Camiones en fila (Frente -> Fin): {fila_camiones}")[cite: 1]
+                    print("-------------------------------------------------")
+
+                elif sub_opcion == 2:
+                    print("\n--- ESTADÍSTICAS DE USO (VECES SELECCIONADAS) ---")
+                    print(f"• Apilar cajas (Opción 1): {contador_opciones[1]} veces")
+                    print(f"• Retirar cajas (Opción 2): {contador_opciones[2]} veces")
+                    print(f"• Llegadas de camión (Opción 3): {contador_opciones[3]} veces")
+                    print(f"• Despachos de camión (Opción 4): {contador_opciones[4]} veces")
+                    print(f"• Consultar reportes (Opción 5): {contador_opciones[5]} veces")
+                    print("-------------------------------------------------")
+
+                elif sub_opcion == 3:
+                    print("\n--- HISTORIAL DE MOVIMIENTOS ---")
+                    if len(historial_movimientos) == 0:
+                        print("Aún no se han registrado movimientos en el sistema.")
+                    else:
+                        print("1. Ver orden cronológico (Antiguos primero)")
+                        print("2. Ver orden inverso (Más recientes primero)")
+                        print("3. Filtrar solo movimientos de Cajas")
+                        print("4. Filtrar solo movimientos de Camiones")
+                        
+                        filtro_raw = input("Elija una forma de visualización (1-4) o presione Enter para ver todo: ").strip()
+                        print("\n--- REGISTRO DE EVENTOS ---")
+
+                        if filtro_raw == "2":
+                            movimientos_a_mostrar = list(reversed(historial_movimientos))
+                        elif filtro_raw == "3":
+                            movimientos_a_mostrar = [m for m in historial_movimientos if "Caja" in m]
+                        elif filtro_raw == "4":
+                            movimientos_a_mostrar = [m for m in historial_movimientos if "Camión" in m]
+                        else:
+                            movimientos_a_mostrar = historial_movimientos
+
+                        encontrados = False
+                        for idx, movimiento in enumerate(movimientos_a_mostrar, 1):
+                            print(f"[{idx}] {movimiento}")
+                            encontrados = True
+
+                        if not encontrados:
+                            print("No hay registros que coincidan con el filtro seleccionado.")
+                    print("-------------------------------------------------")
+
+                elif sub_opcion == 4:
+                    print("\nRegresando al menú principal...")
+                    break
 
         elif opcion == 6:
-            if confirmar("¿Está seguro de que desea salir?"):
+            # Salir
+            if confirmar("¿Está seguro de que desea salir del programa?"):
                 limpiar_pantalla()
-                print("Gracias por utilizar el Sistema de Despacho y Almacén. ¡Hasta luego!\n")
+                print("\nGracias por utilizar el Sistema de Gestión Logística. ¡Hasta luego!")
+                print(f"(Estadísticas finales de uso: {contador_opciones})\n")
                 sys.exit(0)
 
 
