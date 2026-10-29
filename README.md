@@ -3,6 +3,7 @@
 Estimado cliente, esta guía detallada le enseñará a operar de forma sencilla, eficiente y totalmente segura nuestro sistema de control logístico, diseñado específicamente para optimizar el almacenamiento de mercancía y el despacho de transporte de su empresa.   
 
 *¿Cómo iniciar el programa?*
+
 Asegúrese de tener Python correctamente instalado en su computadora. Abra su ventana de ejecución y ejecute el archivo del sistema escribiendo la instrucción correspondiente. Al iniciar la ejecución correctamente, verá aparecer de forma inmediata en su pantalla el menú principal que despliega todas las opciones disponibles para la gestión operativa.  
 
 ***Descripción detallada de las Opciones del Menú***  
